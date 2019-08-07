@@ -3,17 +3,29 @@ import axios from "axios";
 import { Form, Field, withFormik } from "formik";
 import * as Yup from "yup";
 
-const UsersForm = (props) => {
+const UsersForm = ({ errors, touched, values }) => {
     const [users, setUsers] = useState([])
 
     return (
         <div className='userForm-container'>
-            <h1> Registration</h1>
-            <p>Please use the following form to register</p>
+            <h1> User Sign in</h1>
+            <p>Please use the following form to sign in.</p>
             <Form className="userForm">
                 <Field type='text' name='name' placeholder="Please enter your name" />
+                {touched.name && errors.name && (
+                    <p className='errors'>{errors.name}</p>
+                )}
+
                 <Field type='email' name='email' placeholder='Email' />
+                {touched.email && errors.email && (
+                    <p className='errors'>{errors.email}</p>
+                )}
+
                 <Field type='password' name='password' placeholder='password'  />
+                {touched.password && errors.password && (
+                    <p className='errors'>{errors.password}</p>
+                )}
+
                 <label>
                     <Field
                         type='checkbox'
@@ -22,6 +34,10 @@ const UsersForm = (props) => {
                      />
                      I have read and agree with the <a href="#">Terms of Service</a>
                 </label>
+                {touched.termsOfService && errors.termsOfService && (
+                    <p className='errors'>{errors.termsOfService}</p>
+                )}
+
                 <button type='submit'>Submit</button>
             </Form>
         </div>
@@ -46,7 +62,7 @@ const FormikUsersForm = withFormik({
     //======VALIDATION SCHEMA==========
     validationSchema: Yup.object().shape({
         name: Yup.string()
-                 .required(),
+                 .required("Name is required"),
 
         email: Yup.string()
                   .email('Email not valid')
@@ -54,7 +70,7 @@ const FormikUsersForm = withFormik({
 
         password: Yup.string()
                      .min(6, 'Password must be 6 characters or longer')
-                     .required(),
+                     .required('Password is required'),
 
         termsOfService: Yup.bool()
                            .oneOf([true], 'Field must be checked')
@@ -73,7 +89,6 @@ const FormikUsersForm = withFormik({
             })
             .catch(err => console.log('Opps! Something went wrong.',err.response));
     }
-
 })(UsersForm);
 
 
