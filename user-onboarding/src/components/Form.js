@@ -3,8 +3,17 @@ import axios from "axios";
 import { Form, Field, withFormik } from "formik";
 import * as Yup from "yup";
 
-const UsersForm = ({ errors, touched, values }) => {
-    const [users, setUsers] = useState([])
+const UsersForm = ({ errors, touched, values, status }) => {
+    //Used to update users and display them below the form
+    const [users, setUsers] = useState([]);
+    console.log(users)
+
+    //get the status from props
+    useEffect(() => {
+        if(status) {
+            setUsers([...users, status]);
+        }
+    }, [status]);
 
     return (
         <div className='userForm-container'>
@@ -40,6 +49,12 @@ const UsersForm = ({ errors, touched, values }) => {
 
                 <button type='submit'>Submit</button>
             </Form>
+            {/* Displaying Returned Data to screen once the state of users has been updated and added to the array. useEffect is used to update the status and display the side effect used fromt he handleSubmit setStatus()*/}
+            <div className="userList">
+                {users.map(user => (
+                    <p key={user.id} className="printedUsers">{user.name}</p>
+                ))}
+            </div>
         </div>
     )
 
@@ -78,7 +93,7 @@ const FormikUsersForm = withFormik({
     //======END VALIDATION SCHEMA==========
 
     //handle submit with axios post()
-    handleSubmit(values, {resetForm}) {
+    handleSubmit(values, {resetForm, setStatus}) {
         // console.log('Form submitted', values);// coded before axios call to make sure the inputs are working and logging to the console.
         axios
             .post("https://reqres.in/api/users/", values)
@@ -86,6 +101,8 @@ const FormikUsersForm = withFormik({
                 console.log('Form was a success', res)
                 //call resetForm to reset the values(clear the inputs) of the form.
                 resetForm();
+                // call setStatus and pass in the object you want to add to state
+                setStatus(res.data)
             })
             .catch(err => console.log('Opps! Something went wrong.',err.response));
     }
