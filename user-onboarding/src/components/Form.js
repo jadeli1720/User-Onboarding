@@ -38,6 +38,8 @@ const FormikUsersForm = withFormik({
         return {
             name: name || '',
             email: email || '',
+            password: password || '',
+            termsOfService: termsOfService || false
         };
     },
 
@@ -49,8 +51,15 @@ const FormikUsersForm = withFormik({
 
     //handle submit with axios post()
     handleSubmit(values, {resetForm}) {
-        console.log('Form submitted', values);//log to put before axios call to make sure the inputs are working.
-       
+        // console.log('Form submitted', values);// coded before axios call to make sure the inputs are working and logging to the console.
+        axios
+            .post("https://reqres.in/api/users/", values)
+            .then(res => {
+                console.log('Form was a success', res)
+                //call resetForm to reset the values(clear the inputs) of the form.
+                resetForm();
+            })
+            .catch(err => console.log('Opps! Something went wrong.',err.response));
     }
 
 })(UsersForm);
